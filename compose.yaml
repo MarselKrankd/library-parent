@@ -1,0 +1,33 @@
+# «Библиотека»: оба микросервиса одной командой.
+#   docker compose up -d --build     собрать образы и запустить
+#   docker compose ps                состояние (healthy = сервис отвечает)
+#   docker compose push              опубликовать образы в Docker Hub
+#   docker compose stop              остановить
+# HUB_USER — логин Docker Hub (по умолчанию girichev). Свой: set HUB_USER=логин
+name: library
+
+services:
+  book-service:
+    image: ${HUB_USER:-girichev}/book-service:1.0.0
+    build:
+      context: .
+      dockerfile: book-service/Dockerfile
+    ports:
+      - "8070:8070"
+    environment:
+      AUTHOR_SERVICE_URL: http://localhost:8071
+    restart: unless-stopped
+
+  author-service:
+    image: ${HUB_USER:-girichev}/author-service:1.0.0
+    build:
+      context: .
+      dockerfile: author-service/Dockerfile
+    ports:
+      - "8071:8071"
+    environment:
+      BOOK_SERVICE_URL: http://localhost:8070
+    depends_on:
+      book-service:
+        condition: service_healthy   # запускается, когда book-service прошёл проверку здоровья
+    restart: unless-stopped

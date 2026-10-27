@@ -1,0 +1,9 @@
+{
+  "fullName": "Новиков Пётр Ильич",
+  "phone": "+7 (904) 555-66-77",
+  "email": "p.novikov@example.com",
+  "rating": 3.9,
+  "bookIds": [
+    2
+  ]
+}
